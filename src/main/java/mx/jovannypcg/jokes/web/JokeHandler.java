@@ -22,4 +22,8 @@ public class JokeHandler {
         Flux<Joke> jokes = jokeService.findAll();
         return  ServerResponse.ok().body(jokes, Joke.class);
     }
+
+    public Mono<ServerResponse> save(ServerRequest request) {
+        return ServerResponse.created(request.uri()).build();
+    }
 }
