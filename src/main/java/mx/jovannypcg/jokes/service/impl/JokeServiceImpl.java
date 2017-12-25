@@ -6,6 +6,7 @@ import mx.jovannypcg.jokes.service.JokeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class JokeServiceImpl implements JokeService {
@@ -19,5 +20,10 @@ public class JokeServiceImpl implements JokeService {
     @Override
     public Flux<Joke> findAll() {
         return jokeRepository.findAll();
+    }
+
+    @Override
+    public Mono<Joke> save(Joke joke) {
+        return jokeRepository.insert(joke);
     }
 }
