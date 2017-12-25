@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.AbstractReactiveCassandraConfiguration;
+import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.cql.keyspace.CreateKeyspaceSpecification;
 import org.springframework.data.cassandra.core.cql.keyspace.DataCenterReplication;
 import org.springframework.data.cassandra.core.cql.keyspace.KeyspaceOption;
@@ -33,13 +34,21 @@ public class ReactiveCassandraConfiguration extends AbstractReactiveCassandraCon
     }
 
     private CreateKeyspaceSpecification getCreateKeyspaceSpecification() {
-        DataCenterReplication dcr = DataCenterReplication.of("dcr", 3L);
-
         LOGGER.info("Creating [{}] keyspace if it does not exist", keyspaceName);
         return CreateKeyspaceSpecification
                 .createKeyspace(keyspaceName)
                 .ifNotExists()
                 .with(KeyspaceOption.DURABLE_WRITES, true)
-                .withNetworkReplication(dcr);
+                .withSimpleReplication();
+    }
+
+    @Override
+    public String[] getEntityBasePackages() {
+        return new String[] { "mx.jovannypcg.jokes.domain" };
+    }
+
+    @Override
+    public SchemaAction getSchemaAction() {
+        return SchemaAction.RECREATE;
     }
 }
