@@ -33,6 +33,7 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;${id}&quot;&#xd;
 	&quot;content&quot; : &quot;blahhhh&quot;&#xd;
 }&#xd;
 </stringProp>
@@ -126,6 +127,16 @@
             </objProp>
             <stringProp name="filename"></stringProp>
           </ResultCollector>
+          <hashTree/>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="BeanShell PreProcessor" enabled="true">
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="script">UUID uuid = UUID.randomUUID();
+
+vars.put(&quot;id&quot;, uuid.toString());
+</stringProp>
+          </BeanShellPreProcessor>
           <hashTree/>
         </hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /jokes" enabled="true">
