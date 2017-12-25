@@ -9,8 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.util.UUID;
 
 @Component
 public class JokeHandler {
@@ -30,8 +34,26 @@ public class JokeHandler {
 
     public Mono<ServerResponse> save(ServerRequest request) {
         Mono<JokeDTO> body = request.bodyToMono(JokeDTO.class);
-        LOGGER.info("Incomming request: " + body.block());
 
-        return ServerResponse.created(request.uri()).build();
+        return body
+                .flatMap(this::toJokeMono)
+                .flatMap(jokeService::save)
+                .flatMap(savedJoke -> {
+                    LOGGER.info("Saved joke: {}", savedJoke);
+                    return ServerResponse.created(URI.create("/jokes/" + savedJoke.getId())).build();
+                }).switchIfEmpty(ServerResponse.badRequest().build());
+    }
+
+    /**
+     * Converts the {@link JokeDTO} sent as argument to a <code>Mono<Joke></code> object.
+     * @param dto
+     * @return
+     */
+    private Mono<Joke> toJokeMono(JokeDTO dto) {
+        Joke joke = new Joke();
+        joke.setId(UUID.fromString(dto.getId()));
+        joke.setContent(dto.getContent());
+
+        return Mono.just(joke);
     }
 }
